@@ -4,9 +4,11 @@ import Logo from './components/Logo/logo';
 import ImageLinkForm from './components/ImageLinkForm/imageLinkForm';
 import Rank from './components/Rank/rank';
 import FaceRecognition from './components/FaceRecognition/faceRecognition';
+import SignIn from './components/SignIn/signIn';
 import Clarifai from 'clarifai';
 import Particles from 'react-particles-js';
 import './App.css';
+
 
 const particlesOptions = {
   particles: {
@@ -27,8 +29,9 @@ const app = new Clarifai.App({
 class App extends Component {
   state={
     input: '', 
-    imageUrl: 'https://news.northeastern.edu/wp-content/uploads/2018/08/Jessica-Amanambu_faces-750x0-c-default.jpg',
-    box:{}
+    imageUrl: '',
+    box:{},
+    route: 'signin'
   }
 
   calculateFaceLocation = (data) => {
@@ -63,19 +66,28 @@ class App extends Component {
       .catch(err => console.log(err));
   }
 
+  handleRouteChange = (route) => {
+    this.setState({route: route});
+  }
+
   render() {
     return (
       <div className="App">
          <Particles className="particles"
               params={particlesOptions}
             />
-       <Navigation />
-       <Logo />
-       <Rank />
-       <ImageLinkForm 
-        onInputChange={this.handleInputChange} 
-        onButtonSubmit={this.handleButtonSubmit} />
-       <FaceRecognition box={this.state.box} imageUrl={this.state.imageUrl}/>
+       <Navigation onRouteChange={this.handleRouteChange}/>
+       {(this.state.route === 'signin')
+        ? <SignIn onRouteChange={this.handleRouteChange}/> 
+        : <div>
+            <Logo />
+            <Rank />
+            <ImageLinkForm 
+              onInputChange={this.handleInputChange} 
+              onButtonSubmit={this.handleButtonSubmit} />
+            <FaceRecognition box={this.state.box} imageUrl={this.state.imageUrl}/>
+          </div>
+       }
       </div>
     );
   }
